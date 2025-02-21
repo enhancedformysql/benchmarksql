@@ -1,0 +1,111 @@
+
+Instructions for running BenchmarkSQL on MySQL
+---------------------------------------------------
+
+0. Requirements
+
+    Use of JDK7 is required.
+
+1. Create the benchmarksql user and a database
+
+    create user tpcc@'%' identified by 'tpcc_password';
+    grant all on *.* to 'tpcc'@'%' with grant option;
+    flush privileges;
+    CREATE DATABASE benchmarksql;
+
+2. Compile the BenchmarkSQL source code
+
+    As your own UNIX user change into the toplevel directory of the
+    benchmarksql git repository checkout or the directory that was
+    created by unpacking the release tarball/zipfile. Use the ant
+    command to compile the code.
+
+    [wieck@localhost ~] $ cd benchmarksql
+    [wieck@localhost benchmarksql] $ ant
+    Buildfile: /nas1/home/wieck/benchmarksql.git/build.xml
+
+    init:
+        [mkdir] Created dir: /home/wieck/benchmarksql/build
+
+    compile:
+	[javac] Compiling 11 source files to /home/wieck/benchmarksql/build
+
+    dist:
+	[mkdir] Created dir: /home/wieck/benchmarksql/dist
+	  [jar] Building jar: /home/wieck/benchmarksql/dist/BenchmarkSQL-5.0.jar
+    BUILD SUCCESSFUL
+    Total time: 1 second
+    [wieck@localhost benchmarksql] $
+
+3. Create the benchmark configuration file
+
+    Change the the run directory, copy the props.my file and edit
+    the copy to match your system setup and desired scaling.
+
+    [wieck@localhost benchmarksql] $ cd run
+    [wieck@localhost run] $ cp props.my props.mysql
+    [wieck@localhost run] $ vi props.mysql
+    [wieck@localhost run] $
+
+    Note that the provided example configuration is meant to test
+    the functionality of your setupr. That benchmarksql can connect
+    to the database and execute transactions. That configuration
+    is NOT a benchmark run. To make it into one you need to have a
+    configuration that matches your database server size and
+    workload. Leave the sizing for now and perform a first functional
+    test.
+
+    The BenchmarkSQL database has an initial size of approximately
+    100-100MB per configured warehouse. A typical setup would be
+    a database of 2-5 times the physical RAM of the server.
+
+    Likewise the number of concurrent database connections (config
+    parameter terminals) should be something about 2-6 times the
+    number of CPU threads.
+
+    Last but not least benchmark runs are normally done for hours,
+    if not days. This is because on the database sizes above it
+    will take that long to reach a steady state and make sure that
+    all performance relevant functionality of the database, like
+    checkpointing and vacuuming, is included in the measurement.
+
+    So you can see that with a modern server, that has 32-256 CPU
+    threads and 64-512GBi, of RAM we are talking about thousands of
+    warehouses and hundreds of concurrent database connections.
+
+4. Build the schema and initial database load
+
+    Execute the runSQL.sh script with your configuration file.
+
+    [wieck@localhost run]$ ./runSQL.sh props.mysql sql.mysql/tableCreates.sql
+    [wieck@localhost run]$ ./runSQL.sh props.mysql sql.mysql/indexCreates.sql
+    [wieck@localhost run]$ ./runLoader.sh props.mysql
+
+5. Run the configured benchmark
+
+    [wieck@localhost run]$ ./runBenchmark.sh props.mysql 
+
+    The benchmark should run for the number of configured concurrent
+    connections (terminals) and the duration or number of transactions.
+
+    The end result of the benchmark will be reported like this:
+
+    01:58:09,081 [Thread-1] INFO   jTPCC : Term-00,
+    01:58:09,082 [Thread-1] INFO   jTPCC : Term-00, Measured tpmC (NewOrders) = 179.55
+    01:58:09,082 [Thread-1] INFO   jTPCC : Term-00, Measured tpmTOTAL = 329.17
+    01:58:09,082 [Thread-1] INFO   jTPCC : Term-00, Session Start     = 2016-05-25 01:58:07
+    01:58:09,082 [Thread-1] INFO   jTPCC : Term-00, Session End       = 2016-05-25 01:58:09
+    01:58:09,082 [Thread-1] INFO   jTPCC : Term-00, Transaction Count = 10
+
+    At this point you have a working setup.
+
+6. Result report
+
+    BenchmarkSQL collects detailed performance statistics and (if
+    configured) OS performance data. The example configuration file
+    defaults to a directory starting with my_result_.
+
+    Use the generateReport.sh DIRECTORY script to create an HTML file
+    with graphs. This requires R to be installed, which is beyond the
+    scope of this HOW-TO.
+
