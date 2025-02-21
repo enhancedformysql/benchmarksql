@@ -4,7 +4,7 @@ conn=jdbc:mysql://127.0.0.1:3306/benchmarksql?sessionvariables=resultset_metadat
 user=tpcc
 password=tpcc_password
 
-warehouses=10
+warehouses=20
 loadWorkers=10
 
 terminals=20
