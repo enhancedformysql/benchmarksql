@@ -1,5 +1,5 @@
 
-Instructions for running BenchmarkSQL on MySQL
+Instructions for running BenchmarkSQL on MySQL (Only supports the Read Committed isolation level) 
 ---------------------------------------------------
 
 0. Requirements
