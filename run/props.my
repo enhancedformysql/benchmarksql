@@ -1,8 +1,8 @@
 db=mysql
 driver=com.mysql.jdbc.Driver
-conn=jdbc:mysql://127.0.0.1:63306/benchmarksql?sessionvariables=resultset_metadata=none&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT&useLocalSessionState=true&maintainTimeStats=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true&useServerPrepStmts=true&cacheResultSetMetadata=true&metadataCacheSize=1024
-user=wb
-password=123
+conn=jdbc:mysql://127.0.0.1:3306/benchmarksql?sessionvariables=resultset_metadata=none&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT&useLocalSessionState=true&maintainTimeStats=false&useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true&useServerPrepStmts=true&cacheResultSetMetadata=true&metadataCacheSize=1024
+user=tpcc
+password=tpcc_password
 
 warehouses=10
 loadWorkers=10
